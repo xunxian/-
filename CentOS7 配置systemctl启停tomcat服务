@@ -1,0 +1,39 @@
+1、在tomcat/bin目录下，新建setenv.sh文件，保存一下内容：
+CATALINA_PID="/opt/webserver/app/app.pid"
+JAVA_HOME="/opt/jdk7"
+JAVA_OPTS="-server -Xms1024m -Xmx1024m -XX:PermSize=128M -XX:MaxNewSize=256m -XX:MaxPermSize=256m "
+
+2、在/usr/lib/systemd/system目录下增加tomcat.service，目录必须是绝对目录。【system目录代表开机就自动运行服务，而不需要登陆用户才运行服务】
+[Unit]  
+Description=Tomcat  
+After=syslog.target network.target remote-fs.target nss-lookup.target  
+   
+[Service]  
+Type=forking  
+PIDFile=/data/tomcat/tomcat.pid  
+ExecStart=/data/tomcat/bin/startup.sh   
+ExecReload=/bin/kill -s HUP $MAINPID  
+ExecStop=/bin/kill -s QUIT $MAINPID  
+PrivateTmp=true  
+   
+[Install]  
+WantedBy=multi-user.target 
+
+3、启动服务，设置开机自启
+systemctl start tomcat.service
+systemctl enable tomcat.service
+
+【拓展】
+查看全部服务命令：
+systemctl list-unit-files --type service
+查看服务
+systemctl status name.service
+启动服务
+systemctl start name.service
+停止服务
+systemctl stop name.service
+重启服务
+systemctl restart name.service增加开机启动
+systemctl enable name.service
+删除开机启动
+systemctl disable name.service
